@@ -198,15 +198,24 @@ Hooks.on('renderChatLogPF2e', (app, html, data) => {
 });
 
 Hooks.on("renderChatMessage", async (message, html, messageData) => {
+    console.log(message);
     if (message._strike) {
         // console.log(message._strike);
+        
         await message._strike.damage({
             event: new MouseEvent("click", {shiftKey:true}),
             callback: async (d) => {
-                // console.log("DAMAGE !!!!!!!!!!!!!!!!!!!!")
-                // console.log(d);
-                const scuff = d.options.damage.modifiers.filter(m => m.modifier && m.enabled).map(m => m.modifier).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-                html.find(".message-buttons .success").before(`<button style="font-size:90%">Scuff ${scuff}</button>`);
+                if (message.flags.pf2e.context.options.includes("self:type:npc")) {
+                    // console.log(d);
+                    const mod = Math.max(message._strike.item.parent.system.abilities.str.mod, 0);
+                    const scuff = mod + d.dice[0].results.length;
+                    html.find(".message-buttons .success").before(`<button style="font-size:80%" data-tooltip="${d.formula}">Scuff ${scuff}</button>`);
+                }
+                else {
+                    // console.log(d);
+                    const scuff = d.options.damage.modifiers.filter(m => m.modifier && m.enabled).map(m => m.modifier).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+                    html.find(".message-buttons .success").before(`<button style="font-size:80%" data-tooltip="${d.formula}">Scuff ${scuff}</button>`);
+                }
             },
             createMessage: false
         })
