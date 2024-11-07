@@ -1,7 +1,7 @@
 <div style="width:100%;padding:0.5em;gap:0.5em">
 <h2>Experience</h2>
 {{#each members}}
-<div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em">
+<div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em" data-actor="{{this.id}}">
     <div class="flex2 flexrow" style="align-self: center; gap:0.5em">
         <img src="{{this.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
         <div style="align-self: center"/>
@@ -10,26 +10,26 @@
     </div>
     <div>
         <div><strong style="font-size:90%">Personal XP</strong></div>
-        <div class="flexrow">
-            <button style="line-height:1;">-1</button>
-            <div style="align-self: center;text-align:center">0 (0)</div>
-            <button style="line-height:1;">+1</button>
+        <div class="flexrow" data-target="personalxp">
+            {{#if this.isOwner}}<button style="line-height:1;" data-action="dec">-1</button>{{/if}}
+            <div style="align-self: center;text-align:center">{{this.flags.pf2e-extraordinary-tales-remastered.personalxp}} ({{xpUses this.flags.pf2e-extraordinary-tales-remastered.personalxp}})</div>
+            {{#if this.isOwner}}<button style="line-height:1;" data-action="inc">+1</button>{{/if}}
         </div>
     </div>
     <div class="flex1">
         <div><strong style="font-size:90%">Collateral XP</strong></div>
-        <div class="flexrow">
-            <button style="line-height:1;">-1</button>
-            <div style="align-self: center;text-align:center">0 (0)</div>
-            <button style="line-height:1;">+1</button>
+        <div class="flexrow" data-target="collateralxp">
+            {{#if this.isOwner}}<button style="line-height:1;" data-action="dec">-1</button>{{/if}}
+            <div style="align-self: center;text-align:center">{{this.flags.pf2e-extraordinary-tales-remastered.collateralxp}} ({{xpUses this.flags.pf2e-extraordinary-tales-remastered.collateralxp}})</div>
+            {{#if this.isOwner}}<button style="line-height:1;" data-action="inc">+1</button>{{/if}}
         </div>
     </div>
     <div class="flex1">
         <div><strong style="font-size:90%">Hero Points</strong></div>
-        <div class="flexrow">
-            <button style="line-height:1;">-1</button>
-            <div style="align-self: center;text-align:center">0</div>
-            <button style="line-height:1;">+1</button>
+        <div class="flexrow" data-target="heropoints">
+            {{#if this.isOwner}}<button style="line-height:1;" data-action="dec">-1</button>{{/if}}
+            <div style="align-self: center;text-align:center">{{this.system.resources.heroPoints.value}}</div>
+            {{#if this.isOwner}}<button style="line-height:1;" data-action="inc">+1</button>{{/if}}
         </div>
     </div>
 </div>
