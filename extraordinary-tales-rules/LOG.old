@@ -1,0 +1,7 @@
+2024/11/06-16:00:33.416 e240 Recovering log #23
+2024/11/06-16:00:33.423 e240 Delete type=0 #23
+2024/11/06-16:00:33.423 e240 Delete type=3 #21
+2024/11/06-16:02:03.511 3704 Level-0 table #28: started
+2024/11/06-16:02:03.511 3704 Level-0 table #28: 0 bytes OK
+2024/11/06-16:02:03.515 3704 Delete type=0 #26
+2024/11/06-16:02:03.517 3704 Manual compaction at level-0 from '!journal!TG641OnXoKkkXky6' @ 72057594037927935 : 1 .. '!journal.pages!TG641OnXoKkkXky6.zeuf84HvlCPenF6U' @ 0 : 0; will stop at (end)

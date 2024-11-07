@@ -1,0 +1,66 @@
+<div style="width:100%;padding:0.5em;gap:0.5em">
+<h2>Experience</h2>
+{{#each members}}
+<div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em">
+    <div class="flex2 flexrow" style="align-self: center; gap:0.5em">
+        <img src="{{this.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
+        <div style="align-self: center"/>
+            {{this.name}}
+            </div>
+    </div>
+    <div>
+        <div><strong style="font-size:90%">Personal XP</strong></div>
+        <div class="flexrow">
+            <button style="line-height:1;">-1</button>
+            <div style="align-self: center;text-align:center">0 (0)</div>
+            <button style="line-height:1;">+1</button>
+        </div>
+    </div>
+    <div class="flex1">
+        <div><strong style="font-size:90%">Collateral XP</strong></div>
+        <div class="flexrow">
+            <button style="line-height:1;">-1</button>
+            <div style="align-self: center;text-align:center">0 (0)</div>
+            <button style="line-height:1;">+1</button>
+        </div>
+    </div>
+    <div class="flex1">
+        <div><strong style="font-size:90%">Hero Points</strong></div>
+        <div class="flexrow">
+            <button style="line-height:1;">-1</button>
+            <div style="align-self: center;text-align:center">0</div>
+            <button style="line-height:1;">+1</button>
+        </div>
+    </div>
+</div>
+{{/each}}
+<h2>Aid</h2>
+{{#each aid}}
+<div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em">
+
+<div class="flexrow" style="align-items:center; gap:0.5em">
+    <img src="{{this.source.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
+    <div>{{this.source.name}}</div>
+</div>
+<div class="flexrow" style="align-items:center; gap:0.5em">
+    <img src="{{this.target.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
+    <div>{{this.target.name}}</div>
+</div>
+<div>{{this.message.flags.pf2e.context.title}}</div>
+<div>{{this.message.rolls.0.formula}}</div>
+<div>{{this.message.rolls.0.total}}</div>
+</div>
+{{/each}}
+<h2>Hero Points</h2>
+{{#each heroPoints}}
+<div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em">
+<div class="flexrow" style="align-items:center; gap:0.5em">
+    <img src="{{this.actor.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
+    <div>{{this.actor.name}}</div>
+</div>
+<div>{{this.flags.pf2e.context.title}}</div>
+<div>{{this.rolls.0.formula}}</div>
+<div>{{this.rolls.0.total}}</div>
+</div>
+{{/each}}
+</div>

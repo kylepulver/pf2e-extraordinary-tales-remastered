@@ -30,7 +30,19 @@
       "path": "en.json"
     }
   ],
-  "packs": [],
+  "packs": [{
+    "name": "extraordinary-tales-actions",
+    "label": "Extraordinary Tales Actions",
+    "path": "./extraordinary-tales-actions",
+    "system": "pf2e",
+    "type": "Item"
+  },{
+    "name": "extraordinary-tales-rules",
+    "label": "Extraordinary Tales Rules",
+    "path": "./extraordinary-tales-rules",
+    "system": "pf2e",
+    "type": "JournalEntry"
+  }],
   "relationships": {
     "systems": [
     ],
@@ -42,6 +54,36 @@
     }
   },
   "flags": {
+    "pf2e-extraordinary-tales-remastered": {
+      "pf2e-homebrew": {
+        "creatureTraits": {
+          "escalator": "Escalator",
+          "heroic": "Heroic"
+        },
+        "featTraits": {
+          "escalator": "Escalator",
+          "heroic": "Heroic"
+        },
+        "weaponTraits": {
+          "trusty": {
+            "label": "Trusty",
+            "description": "If your first attack with this d4 damage die weapon misses, your next attack with the same weapon ignores your multiple attack penalty. Your multiple attack penalty increases with each attack."
+          },
+          "fierce": {
+            "label": "Fierce",
+            "description": "An attack made with this d4 damage die weapon deals double damage when the result of its attack roll is 5 or higher than the target's AC."
+          },
+          "reliable": {
+            "label": "Reliable",
+            "description": "Your first attack made with this d4 damage die weapon during your turn reduces the DC of a flat check by 1 to hit a concealed or hidden target."
+          },
+          "graceful": {
+            "label": "Graceful",
+            "description": "Your first attack made with this d4 damage die weapon during your turn has a range increment penalty of -1 instead of -2 per increment."
+          }
+        }
+      }
+    },
     "hotReload": {
       "extensions": [
         "css",
