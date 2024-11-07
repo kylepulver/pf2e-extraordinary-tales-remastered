@@ -198,7 +198,7 @@ Hooks.on('renderChatLogPF2e', (app, html, data) => {
 });
 
 Hooks.on("renderChatMessage", async (message, html, messageData) => {
-    console.log(message);
+    // console.log(message);
     if (message._strike) {
         // console.log(message._strike);
         
