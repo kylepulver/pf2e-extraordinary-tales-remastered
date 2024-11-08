@@ -46,6 +46,29 @@ Hooks.on("init", () => {
         openEditor: () => {
             new ExtraTalesEditorApplication().render(true);
         },
+        getScuffDamage: async (strike) => {
+            let result = 0;
+            // console.log(strike);
+            await strike.damage({
+                event: new MouseEvent("click", {shiftKey:true}),
+                callback: async (d) => {
+                    // console.log(d);
+                    d.instances.forEach(i => {
+                        i.type
+                    })
+                    if (strike.weapon?.parent?.type == "npc") {
+                        // const ability = strike.item.defaultAttribute
+                        const mod = Math.max(strike.item.parent.system.abilities.str.mod, 0);
+                        result = mod + d.dice[0].results.length;
+                    }
+                    else {
+                        result = d.options.damage.modifiers.filter(m => m.modifier && m.enabled).map(m => m.modifier).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+                    }
+                },
+                createMessage: false
+            });
+            return result;
+        },
         promptPersonalXP: async () => {
             const actor = game.user.character;
             const xp = parseInt(actor.getFlag('pf2e-extraordinary-tales-remastered', 'personalxp') ?? 0);
@@ -195,30 +218,41 @@ Hooks.on('renderChatLogPF2e', (app, html, data) => {
     $(".roll-type-select option[value=gmroll]").text("Roll to Self and GM");
     $(".roll-type-select option[value=selfroll]").text("Test Roll to Self");
     $(".roll-type-select option[value=blindroll]").text("Secret Roll to GM");
+
+    html.on("click", "[data-action=scuff-damage]",async (ev) => {
+        const id = $(ev.currentTarget).closest("[data-message-id]").data("message-id")
+        const message = game.messages.get(id);
+        if (message._strike) {
+            const scuff = await game.extraordinarytales.getScuffDamage(message._strike)
+            const type = message._strike.item.baseDamage.damageType;
+            // await new Roll(`(${scuff})[${type}]`).toMessage();
+            ui.chat.processMessage(`/r (${scuff})[${type}] #<b>Scuff Damage</b>`, {
+                speaker: message.speaker
+            })
+            // console.log(message);
+        }
+    })
 });
 
 Hooks.on("renderChatMessage", async (message, html, messageData) => {
-    // console.log(message);
     if (message._strike) {
-        // console.log(message._strike);
-        
-        await message._strike.damage({
-            event: new MouseEvent("click", {shiftKey:true}),
-            callback: async (d) => {
-                if (message.flags.pf2e.context.options.includes("self:type:npc")) {
-                    // console.log(d);
-                    const mod = Math.max(message._strike.item.parent.system.abilities.str.mod, 0);
-                    const scuff = mod + d.dice[0].results.length;
-                    html.find(".message-buttons .success").before(`<button style="font-size:80%" data-tooltip="${d.formula}">Scuff ${scuff}</button>`);
-                }
-                else {
-                    // console.log(d);
-                    const scuff = d.options.damage.modifiers.filter(m => m.modifier && m.enabled).map(m => m.modifier).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-                    html.find(".message-buttons .success").before(`<button style="font-size:80%" data-tooltip="${d.formula}">Scuff ${scuff}</button>`);
-                }
-            },
-            createMessage: false
-        })
+        const scuff = await game.extraordinarytales.getScuffDamage(message._strike)
+        html.find(".message-buttons .success").before(`<button style="font-size:80%" data-action="scuff-damage"  >Scuff ${scuff}</button>`);
+        // await message._strike.damage({
+        //     event: new MouseEvent("click", {shiftKey:true}),
+        //     callback: async (d) => {
+        //         if (message.flags.pf2e.context.options.includes("self:type:npc")) {
+        //             const mod = Math.max(message._strike.item.parent.system.abilities.str.mod, 0);
+        //             const scuff = mod + d.dice[0].results.length;
+        //             html.find(".message-buttons .success").before(`<button style="font-size:80%" data-action="scuff-damage" data-tooltip="${d.formula}">Scuff ${scuff}</button>`);
+        //         }
+        //         else {
+        //             const scuff = d.options.damage.modifiers.filter(m => m.modifier && m.enabled).map(m => m.modifier).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+        //             html.find(".message-buttons .success").before(`<button style="font-size:80%" data-action="scuff-damage" data-tooltip="${d.formula}">Scuff ${scuff}</button>`);
+        //         }
+        //     },
+        //     createMessage: false
+        // })
     }
 });
 
