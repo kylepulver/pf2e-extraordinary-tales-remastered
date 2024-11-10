@@ -46,7 +46,7 @@
     <img src="{{this.target.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
     <div>{{this.target.name}}</div>
 </div>
-<div>{{this.message.flags.pf2e.context.title}}</div>
+<div>{{{this.message.flags.pf2e.context.title}}}</div>
 <div>{{this.message.rolls.0.formula}}</div>
 <div>{{this.message.rolls.0.total}}</div>
 </div>
@@ -54,13 +54,13 @@
 <h2>Hero Points</h2>
 {{#each heroPoints}}
 <div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em">
-<div class="flexrow" style="align-items:center; gap:0.5em">
+<div class="flexrow flex2" style="align-items:center; gap:0.5em">
     <img src="{{this.actor.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
     <div>{{this.actor.name}}</div>
 </div>
-<div>{{this.flags.pf2e.context.title}}</div>
-<div>{{this.rolls.0.formula}}</div>
-<div>{{this.rolls.0.total}}</div>
+<div class="flex2">{{{this.flags.pf2e.context.title}}}</div>
+<div style="text-align:center">{{this.rolls.0.formula}}</div>
+<div style="text-align:center;font-size:125%">{{this.rolls.0.total}}</div>
 </div>
 {{/each}}
 </div>

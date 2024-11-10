@@ -49,8 +49,9 @@ Hooks.on("init", () => {
         getScuffDamage: async (strike) => {
             let result = 0;
             // console.log(strike);
+            
             await strike.damage({
-                event: new MouseEvent("click", {shiftKey:true}),
+                event: new MouseEvent("click", {shiftKey: game.user.settings["showDamageDialogs"]}),
                 callback: async (d) => {
                     // console.log(d);
                     d.instances.forEach(i => {
@@ -114,8 +115,6 @@ Hooks.on("init", () => {
 
             const content = `<div style="text-align:center;padding:0.5em;align-items:center" class="flexrow"><div>Collateral XP: ${xp}<div style="font-size:125%">Uses Remaining: <strong>${game.extraordinarytales.getUsagesFromXP(xp)}</strong></div></div><div><div>Abilities</div>` + await TextEditor.enrichHTML(`@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rnsVkUEavmw6dl0B]{Daring Determination} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Sye4A4BHZWpkn1Pz]{Shared Struggle} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.hZxUrDV2W7a4PZw2]{Tandem Tactics}`) + `</div></div>`
 
-
-            const info = `<div>${xp} (${game.extraordinarytales.getUsagesFromXP(xp)})</div></div>`
             let d = new Dialog({
                 title: "Use Collateral XP Ability",
                 content: content,
@@ -358,7 +357,7 @@ class ExtraTalesEditorApplication extends Application {
         data.heroPoints = heroPoints;
 
 
-
+        // console.log(data);
         return data;
     }
 
