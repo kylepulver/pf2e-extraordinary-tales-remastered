@@ -48,12 +48,10 @@ Hooks.on("init", () => {
         },
         getScuffDamage: async (strike) => {
             let result = 0;
-            // console.log(strike);
             
             await strike.damage({
                 event: new MouseEvent("click", {shiftKey: game.user.settings["showDamageDialogs"]}),
                 callback: async (d) => {
-                    // console.log(d);
                     d.instances.forEach(i => {
                         i.type
                     })
@@ -74,15 +72,15 @@ Hooks.on("init", () => {
             const actor = game.user.character;
             const xp = parseInt(actor.getFlag('pf2e-extraordinary-tales-remastered', 'personalxp') ?? 0);
           
-        //     const doc = await fromUuid("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T")
-            
-        //     const json = doc.toJSON();
-        // const actor =
-        //   canvas.tokens.controlled[0]?.actor ?? // Selected token's corresponding actor
-        //   game.user?.character ?? // Assigned actor
-        //   new Actor({ name: game.user.name, type: "character" }); // Dummy actor fallback
+            //     const doc = await fromUuid("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T")
+                
+            //     const json = doc.toJSON();
+            // const actor =
+            //   canvas.tokens.controlled[0]?.actor ?? // Selected token's corresponding actor
+            //   game.user?.character ?? // Assigned actor
+            //   new Actor({ name: game.user.name, type: "character" }); // Dummy actor fallback
 
-        // await new doc.constructor(json, { parent: actor }).toChat();
+            // await new doc.constructor(json, { parent: actor }).toChat();
 
             const content = `<div style="text-align:center;padding:0.5em;align-items:center" class="flexrow"><div>Personal XP: ${xp}<div style="font-size:125%">Uses Remaining: <strong>${game.extraordinarytales.getUsagesFromXP(xp)}</strong></div></div><div><div>Abilities</div>` + await TextEditor.enrichHTML(`@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T]{Heroic Harmony} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rdprmdU1JQ0IVAVn]{Rapid Response} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Xv0Bn4TdsNHgZFHf]{Ensure Endeavor}`) + `</div></div>`
             let d = new Dialog({
@@ -224,34 +222,70 @@ Hooks.on('renderChatLogPF2e', (app, html, data) => {
         if (message._strike) {
             const scuff = await game.extraordinarytales.getScuffDamage(message._strike)
             const type = message._strike.item.baseDamage.damageType;
-            // await new Roll(`(${scuff})[${type}]`).toMessage();
             ui.chat.processMessage(`/r (${scuff})[${type}] #<b>Scuff Damage</b>`, {
                 speaker: message.speaker
             })
-            // console.log(message);
         }
     })
 });
 
 Hooks.on("renderChatMessage", async (message, html, messageData) => {
+    if (message.isCheckRoll) {
+        html.find('.dice-formula').not('.reroll-discard .dice-formula').each(function(index, element) {
+            let rollhtml = $(this).html();
+
+            message.rolls[0].dice.forEach(d => {
+                rollhtml = rollhtml.replace(d.expression, `<span data-tooltip="%%%%" style="font-size:var(--font-size-20)">[${d.values.join("+")}]</span>&nbsp;`);
+            })
+
+            message.rolls[0].dice.forEach(d => {
+                rollhtml = rollhtml.replace("%%%%", d.expression);
+            })
+
+            $(this).html(rollhtml)
+        })
+
+    }
+    if (message.isDamageRoll) {
+        html.find('.dice-formula').each(function(index, element) {
+            const elements = $(this).find('.instance');
+            if (!elements.length) return; // If there are no damage instances, just escape.
+
+            let instances = message.rolls[0].instances ?? [];
+
+            if (index == 1) { // SPLASH DAMAGE ONLY
+                instances = instances.filter(instance => instance.splash)
+            }
+
+            instances.forEach((instance, i) => {
+                let instancehtml = $(elements[i]).html();
+                if (instance.persistent) {
+                }
+                else {
+                    instance.dice.forEach(d => {
+                        instancehtml = instancehtml.replace(d.expression, `<span data-tooltip="%%%%">[${d.values.join("+")}]</span>`)
+                    })
+                    instance.dice.forEach(d => {
+                        instancehtml = instancehtml.replace("%%%%", d.expression)
+                    })
+                    $(elements[i]).html(instancehtml)
+                    $(elements[i]).prepend(`<span style="font-size:var(--font-size-20)">${instance.total}</span><span>=</span>`)
+                }
+
+                $(elements[i]).find('i').addClass("fa-lg fa-fw")
+                $(elements[i]).find('.splash i').removeClass("fa-lg fa-fw")
+                $(elements[i]).find('.precision i').removeClass("fa-lg fa-fw")
+            })
+
+            // Strip out the extra "+" text
+            $(this).html($(this).children())
+        })
+    }
+
+
     if (message._strike) {
         const scuff = await game.extraordinarytales.getScuffDamage(message._strike)
         html.find(".message-buttons .success").before(`<button style="font-size:80%" data-action="scuff-damage"  >Scuff ${scuff}</button>`);
-        // await message._strike.damage({
-        //     event: new MouseEvent("click", {shiftKey:true}),
-        //     callback: async (d) => {
-        //         if (message.flags.pf2e.context.options.includes("self:type:npc")) {
-        //             const mod = Math.max(message._strike.item.parent.system.abilities.str.mod, 0);
-        //             const scuff = mod + d.dice[0].results.length;
-        //             html.find(".message-buttons .success").before(`<button style="font-size:80%" data-action="scuff-damage" data-tooltip="${d.formula}">Scuff ${scuff}</button>`);
-        //         }
-        //         else {
-        //             const scuff = d.options.damage.modifiers.filter(m => m.modifier && m.enabled).map(m => m.modifier).reduce((accumulator, currentValue) => accumulator + currentValue, 0)
-        //             html.find(".message-buttons .success").before(`<button style="font-size:80%" data-action="scuff-damage" data-tooltip="${d.formula}">Scuff ${scuff}</button>`);
-        //         }
-        //     },
-        //     createMessage: false
-        // })
     }
 });
 
@@ -311,11 +345,11 @@ class ExtraTalesEditorApplication extends Application {
         const defaults = super.defaultOptions;
 
         const overrides = {
-            height: 'auto',
             id: 'extratales-editor',
             template: 'modules/pf2e-extraordinary-tales-remastered/editor.hbs',
             title: "Extraordinary Tales",
             width: 600,
+            height: 600,
             classes: ["pf2e-extraordinary-tales-remastered"]
         };
 
@@ -328,12 +362,10 @@ class ExtraTalesEditorApplication extends Application {
         let recentMessages = game.messages.filter(m => m.timestamp > Date.now() - 1000 * 60 * 60 * 24).filter(m => m.getFlag("ez-mark-aid", "marks") ?? false !== false);
 
         let heroPoints = game.messages.filter(m => m.timestamp > Date.now() - 1000 * 60 * 60 * 24).filter(m => m.isReroll && (m.flavor ?? "").includes("fa-hospital-symbol") );
-        //&& !!m.flavor && m.flavor.contains("fa-hospital-symbol")
 
         const aid = [];
         recentMessages.forEach(m => {
             const ids = m.flags["ez-mark-aid"].marks.id;
-            // console.log(m);
             Object.keys(ids).forEach(id => {
                 if (ids[id]) {
                     const source = game.actors.get(m.speaker.actor);
@@ -349,15 +381,9 @@ class ExtraTalesEditorApplication extends Application {
             })
         })
 
-        // console.log(aid);
-        // console.log(heroPoints);
-        // heroPoints.forEach(i => console.log(i.flavor))
-
         data.aid = aid;
         data.heroPoints = heroPoints;
 
-
-        // console.log(data);
         return data;
     }
 
@@ -376,13 +402,26 @@ class ExtraTalesEditorApplication extends Application {
         })
 
         html.on("click", "[data-action]", async (ev) => {
-            // console.log(ev);
             const action = ev.currentTarget.dataset.action;
+
+            if (action == "personal") {
+                if (game.user.isGM) return;
+                game.extraordinarytales.activatePersonalXP(game.user.character);
+                return;
+            }
+            if (action == "collateral") {
+                if (game.user.isGM) return;
+                game.extraordinarytales.activateCollateralXP(game.user.character);
+                return;
+            }
+            if (action == "rules") {
+                game.extraordinarytales.openRules();
+                return;
+            }
+
             const target = $(ev.currentTarget).closest("[data-target]").data("target");
             const actorid = $(ev.currentTarget).closest("[data-actor]").data("actor");
             const actor = game.actors.get(actorid);
-
-            // console.log(action, target, actor)
 
             if (target == "personalxp" || target == "collateralxp") {
                 const xp = parseInt(actor.getFlag('pf2e-extraordinary-tales-remastered', target) ?? 0)
@@ -415,17 +454,33 @@ Hooks.on("getChatLogEntryContext", (application, options) => {
         const message = game.messages.get($li[0].dataset.messageId, { strict: true });
         game.pf2e.Check.rerollFromMessage(message, { heroPoint: true, keep: "higher" })
     }
-    // console.log(heroPoint);
+});
+
+Hooks.on('getSceneControlButtons', (controls) => {
+    controls.forEach(control => {
+        if (control.name == "token") {
+            control.tools.push({
+                active: false,
+                icon: "fa-solid fa-scroll",
+                name: "extraordinarytales",
+                title: "Extraordinary Tales",
+                toggle: false,
+                visible: true,
+                onClick: () => {
+                    game.extraordinarytales.openEditor();
+                }
+            })
+        }
+    })
 });
 
 Hooks.on("ready", async () => {
     await game.extraordinarytales.createMacros();
-    // new ExtraTalesEditorApplication().render(true);
 
     Handlebars.registerHelper('xpUses', function (xp) {
         return game.extraordinarytales.getUsagesFromXP(parseInt(xp) || 0)
     })
-    
+
 
     if (!game.user.isGM) return;
 
@@ -452,87 +507,3 @@ Hooks.on("preUpdateActor", (document, changed, options, userId) => {
         // console.log("HERO POINTS")
     }
 })
-
-// Hooks.on("renderPartySheetPF2e", (app, html, data) => {
-//     return;
-//     console.log(app);
-
-  
-
-//     html.find(".sub-nav").append(`<a class="" data-tab="extratales" style="line-height:0.75;letter-spacing:-0.05em">Extraordinary Tales</a>`)
-
-//     const exData = app.object;
-
-//     let recentMessages = game.messages.filter(m => m.timestamp > Date.now() - 1000 * 60 * 60 * 24).filter(m => m.getFlag("ez-mark-aid", "marks") ?? false !== false);
-//     let heroPoints = game.messages.filter(m => m.timestamp > Date.now() - 1000 * 60 * 60 * 24).filter(m => m.isReroll && (m.flavor ?? "").includes("fa-hospital-symbol") );
-//     //&& !!m.flavor && m.flavor.contains("fa-hospital-symbol")
-
-//     const aid = [];
-//     recentMessages.forEach(m => {
-//         const ids = m.flags["ez-mark-aid"].marks.id;
-//         console.log(m);
-//         Object.keys(ids).forEach(id => {
-//             if (ids[id]) {
-//                 const source = game.actors.get(m.speaker.actor);
-//                 const actor = game.actors.get(id);
-//                 if (!!source && !!actor) {
-//                     aid.push({
-//                         source: source,
-//                         target: actor,
-//                         message: m,
-//                     });
-//                 }
-//             }
-//         })
-//     })
-
-//     console.log(aid);
-//     console.log(heroPoints);
-//     // heroPoints.forEach(i => console.log(i.flavor))
-
-//     exData.aid = aid;
-//     exData.heroPoints = heroPoints;
-
-//     renderTemplate("modules/pf2e-extraordinary-tales-remastered/editor.hbs", exData).then(result => {
-//         html.find(".container").append(`<div class="tab extratales" data-tab="extratales">${result}</div>`)
-//     })
-// });
-
-
-
-// XP rules
-
-/* feature list:
-
-extra tales screen
-
-extra tales buttons
-
-modify personal xp
-activate personal xp
-
-modify collateral xp
-activate collateral xp
-
-modify hero points
-
-
-make hero points keep the highest
-override rerolls
-
-include compendium of rules
-
-heroic bonus type
-
-escalation
-combat interface controls
-
-scrape damage
-
-d4 weapon traits
-
-reflection rules text
-
-
-
-*/

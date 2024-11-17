@@ -1,4 +1,9 @@
 <div style="width:100%;padding:0.5em;gap:0.5em">
+    <div class="flexrow">
+        <button data-action="personal">Use Personal Ability</button>
+        <button data-action="collateral">Use Collateral Ability</button>
+        <button data-action="rules">Open Rules Reference</button>
+    </div>
 <h2>Experience</h2>
 {{#each members}}
 <div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em" data-actor="{{this.id}}">
@@ -34,23 +39,26 @@
     </div>
 </div>
 {{/each}}
+
 <h2>Aid</h2>
 {{#each aid}}
 <div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em">
 
-<div class="flexrow" style="align-items:center; gap:0.5em">
-    <img src="{{this.source.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
+<div class="flexrow flex2" style="align-items:center; gap:0.5em">
+    <img src="{{this.source.prototypeToken.texture.src}}" style="align-self: center;max-height:2em;max-width:2em"/>
     <div>{{this.source.name}}</div>
 </div>
-<div class="flexrow" style="align-items:center; gap:0.5em">
-    <img src="{{this.target.prototypeToken.texture.src}}" style="align-self: center;max-height:3em;max-width:3em"/>
+<div style="flex:0 0"><i class="fa-solid fa-arrow-right"></i></div>
+<div class="flexrow flex2" style="align-items:center; gap:0.5em">
+    <img src="{{this.target.prototypeToken.texture.src}}" style="align-self: center;max-height:2em;max-width:2em"/>
     <div>{{this.target.name}}</div>
 </div>
-<div>{{{this.message.flags.pf2e.context.title}}}</div>
-<div>{{this.message.rolls.0.formula}}</div>
-<div>{{this.message.rolls.0.total}}</div>
+<div class="flex2">{{{this.message.flags.pf2e.context.title}}}</div>
+<div style="text-align:center">{{this.message.rolls.0.formula}}</div>
+<div style="text-align:center;font-size:125%">{{this.message.rolls.0.total}}</div>
 </div>
 {{/each}}
+
 <h2>Hero Points</h2>
 {{#each heroPoints}}
 <div class="flexrow" style="line-height:1;align-items:center;padding:0.25em 0;gap:0.5em">
@@ -63,4 +71,5 @@
 <div style="text-align:center;font-size:125%">{{this.rolls.0.total}}</div>
 </div>
 {{/each}}
+
 </div>

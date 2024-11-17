@@ -1,0 +1,125 @@
+
+ span.instance {
+    width: 100%;
+ }
+
+ div.instances {
+    visibility: hidden;
+    height:0;
+    width:0;
+    inset: 0;
+ }
+
+ .chat-message .message-content .damage-roll .dice-result .dice-formula {
+    gap: 1px;
+ }
+
+ .chat-message .message-content .damage-roll .dice-result .dice-formula .instance {
+    padding: 2px 0;
+    display: flex;
+    gap: 0.15em;
+    align-items: center;
+    text-shadow: 1px 1px 0 #fff;
+ }
+
+ .chat-message .message-content .damage-roll .dice-result .dice-formula .instance i {
+    order: -1;
+ }
+
+ .dice-roll .dice-formula, .dice-roll .dice-total {
+    text-align: left;
+    line-height: 1;
+    flex: 1;
+    margin-bottom: 0 !important;
+ }
+
+ .chat-message .message-content .damage-roll .dice-result .instance .precision, .chat-message .message-content .damage-roll .dice-result .instance .splash {
+    display:flex;
+    border-width: 0;
+    padding: 0;
+    line-height: 1;
+ }
+ .chat-message .message-content .damage-roll .dice-result .dice-total .total {
+    padding: 0;
+ }
+
+ .chat-message .message-content .damage-roll .dice-result .instance .precision, .chat-message .message-content .damage-roll .dice-result .instance .splash {
+    display: inline;
+ }
+
+ .chat-message[data-theme] .dice-roll .dice-formula {
+    align-items: center;
+    display: flex;
+    white-space: nowrap;
+    padding: 0;
+    text-shadow: 1px 1px 0 #fff;
+ }
+
+ .reroll-discard .dice-formula {
+    opacity: 0.5;
+ }
+
+ .dice-roll .dice-tooltip.expanded {
+    width: 100%;
+    flex: 1 1 100%;
+ }
+
+ .chat-message .message-content .damage-roll .dice-result .dice-total,
+ .chat-message[data-theme] .dice-roll .dice-total {
+    order: -1;
+    white-space: nowrap;
+    height: auto;
+    background: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    flex: 0 0 1.5em;
+    text-align: center;
+    padding-top: 1px;
+ }
+ 
+ .dice-roll .dice-result {
+    display: flex;
+    gap: 0.25em;
+    flex-wrap: wrap;
+    position: relative;
+ }
+
+ .chat-message > .message-content .dice-total button.set-as-initiative {
+    display: none !important;
+ }
+
+ .chat-message ul.notes {
+    overflow: auto;
+    max-height: 200px;
+    padding: 2px;
+    box-shadow: 0 0 4px inset #0004;
+ }
+
+ .tah-tags-wrapper .tags, [data-theme] .tags, [data-dorako-ui-scope="limited"] .tags, [data-theme] .tags.paizo-style, [data-dorako-ui-scope="limited"] .tags.paizo-style {
+    gap: 0 !important;
+ }
+
+ .tags:not(.form-fields) .tag.tag_transparent, .tags:not(.form-fields) .tag option.tag_transparent {
+    padding: 1px 2px;
+    line-height: 1;
+ }
+
+ [data-theme] .tags .tag.tag_transparent {
+    margin-top: 0;
+    margin-right: 0;
+ }
+
+ .tags:not(.form-fields) .tag.tag_transparent, .tags:not(.form-fields) .tag option.tag_transparent {
+    box-shadow: none;
+    background: #0001;
+    letter-spacing: -0.01em;
+ }
+
+ .tah-tags-wrapper .tags tag, .tah-tags-wrapper .tags .tag:not(.tag_transparent, [data-action]), [data-theme] .tags tag, [data-theme] .tags .tag:not(.tag_transparent, [data-action]), [data-dorako-ui-scope="limited"] .tags tag, [data-dorako-ui-scope="limited"] .tags .tag:not(.tag_transparent, [data-action]), [data-theme] .tags.paizo-style tag, [data-theme] .tags.paizo-style .tag:not(.tag_transparent, [data-action]), [data-dorako-ui-scope="limited"] .tags.paizo-style tag, [data-dorako-ui-scope="limited"] .tags.paizo-style .tag:not(.tag_transparent, [data-action]) {
+    padding: 1px;
+ }
+
+ .chat-message .flavor-text h4.action {
+    line-height: 1;
+    margin-bottom: 2px;
+ }
