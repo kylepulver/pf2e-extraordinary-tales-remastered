@@ -230,10 +230,15 @@ Hooks.on('renderChatLogPF2e', (app, html, data) => {
 });
 
 Hooks.on("renderChatMessage", async (message, html, messageData) => {
-    if (message.isCheckRoll) {
-        if (message.blind) // dont reformat secret rolls
+    if (message._strike) {
+        const scuff = await game.extraordinarytales.getScuffDamage(message._strike)
+        html.find(".message-buttons .success").before(`<button style="font-size:80%" data-action="scuff-damage"  >Scuff ${scuff}</button>`);
+    }
+
+    if (message.blind) // dont reformat secret rolls
             return;
 
+    if (message.isCheckRoll) {
         html.find('.dice-formula').not('.reroll-discard .dice-formula').each(function(index, element) {
             let rollhtml = $(this).html();
 
@@ -249,6 +254,7 @@ Hooks.on("renderChatMessage", async (message, html, messageData) => {
         })
 
     }
+
     if (message.isDamageRoll) {
         html.find('.dice-formula').each(function(index, element) {
             const elements = $(this).find('.instance');
@@ -283,12 +289,6 @@ Hooks.on("renderChatMessage", async (message, html, messageData) => {
             // Strip out the extra "+" text
             $(this).html($(this).children())
         })
-    }
-
-
-    if (message._strike) {
-        const scuff = await game.extraordinarytales.getScuffDamage(message._strike)
-        html.find(".message-buttons .success").before(`<button style="font-size:80%" data-action="scuff-damage"  >Scuff ${scuff}</button>`);
     }
 });
 
