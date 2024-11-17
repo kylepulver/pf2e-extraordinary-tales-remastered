@@ -231,6 +231,9 @@ Hooks.on('renderChatLogPF2e', (app, html, data) => {
 
 Hooks.on("renderChatMessage", async (message, html, messageData) => {
     if (message.isCheckRoll) {
+        if (message.blind) // dont reformat secret rolls
+            return;
+
         html.find('.dice-formula').not('.reroll-discard .dice-formula').each(function(index, element) {
             let rollhtml = $(this).html();
 
