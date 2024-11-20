@@ -1,5 +1,9 @@
 console.log("Extraordinary Tales | Loaded");
 
+const getMessage = (html) => {
+    return game.messages.get($(html).data("messageId"))
+}
+
 Hooks.on("init", () => {
     game.extraordinarytales = {
         activatePersonalXP: async (actor) => {
@@ -236,7 +240,7 @@ Hooks.on("renderChatMessage", async (message, html, messageData) => {
     }
 
     if (message.blind) // dont reformat secret rolls
-            return;
+        return;
 
     if (message.isCheckRoll) {
         html.find('.dice-formula').not('.reroll-discard .dice-formula').each(function(index, element) {
@@ -450,13 +454,110 @@ class ExtraTalesEditorApplication extends Application {
 }
 
 
-// Keep the higher roll from hero points
 Hooks.on("getChatLogEntryContext", (application, options) => {
+    // Keep the higher roll from hero points
     const heroPoint = options.find(o => o.name == "PF2E.RerollMenu.HeroPoint")
     heroPoint.callback = ($li) => {
         const message = game.messages.get($li[0].dataset.messageId, { strict: true });
         game.pf2e.Check.rerollFromMessage(message, { heroPoint: true, keep: "higher" })
     }
+
+    options.push({
+        name: "Minimum Damage",
+        condition: li => {
+            const message = getMessage(li);
+            return (message.isOwner || game.user.isGM) && message.isDamageRoll;
+        },
+        icon: `<i class="fas fa-circle-down"></i>`,
+        callback: async li => {
+            const message = getMessage(li);
+            if (!message.getFlag("pf2e-extraordinary-tales-remastered", "original-rolls"))
+                await message.setFlag("pf2e-extraordinary-tales-remastered", "original-rolls", message.rolls);
+            
+            const newRolls = [];
+
+            for(const roll of message.rolls) {
+                const newRoll = roll.clone();
+                newRoll.dice.forEach(die => {
+                    for(let i = 0; i < die.number; i++) {
+                        die.results.push({result: 1, active: true})
+                    }
+                })
+
+                await newRoll.evaluate();
+                newRolls.push(newRoll);
+            }
+
+            message.rolls = newRolls;
+
+            await message.update({
+                rolls: foundry.utils.duplicate(newRolls)
+            })
+        }
+    })
+
+    // options.push({
+    //     name: "Log Data",
+    //     condition: true,
+    //     callback: $li => {
+    //         const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+    //         console.log(message);
+    //     }
+    // });
+
+    options.push({
+        name: "Maximum Damage",
+        condition: $li => {
+            const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+            return (message.isOwner || game.user.isGM) && message.isDamageRoll;
+        },
+        icon: `<i class="fas fa-circle-up"></i>`,
+        callback: async $li => {
+            const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+            if (!message.getFlag("pf2e-extraordinary-tales-remastered", "original-rolls"))
+                await message.setFlag("pf2e-extraordinary-tales-remastered", "original-rolls", message.rolls);
+
+            // const DamageRollClass = CONFIG.Dice.rolls.find(i => i.prototype.constructor.name == "DamageRoll");
+            // const damageroll = new DamageRollClass("4d8");
+            const newRolls = [];
+
+            for(const roll of message.rolls) {
+                const newRoll = roll.clone();
+                newRoll.dice.forEach(die => {
+                    for(let i = 0; i < die.number; i++) {
+                        die.results.push({result: die.faces, active: true})
+                    }
+                })
+
+                await newRoll.evaluate();
+                newRolls.push(newRoll);
+            }
+
+            message.rolls = newRolls;
+
+            await message.update({
+                rolls: foundry.utils.duplicate(newRolls)
+            })
+        }
+    })
+
+    options.push({
+        name: "Rolled Damage",
+        condition: $li => {
+            const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+            return (message.isOwner || game.user.isGM) && !!message.getFlag("pf2e-extraordinary-tales-remastered", "original-rolls");
+        },
+        icon: `<i class="fas fa-rotate-left"></i>`,
+        callback: async $li => {
+            const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+            const rolls = message.getFlag("pf2e-extraordinary-tales-remastered", "original-rolls");
+            message.rolls = foundry.utils.duplicate(message.rolls);
+            await message.update({
+                rolls: foundry.utils.duplicate(rolls)
+            })
+        }
+    })
+
 });
 
 Hooks.on('getSceneControlButtons', (controls) => {
