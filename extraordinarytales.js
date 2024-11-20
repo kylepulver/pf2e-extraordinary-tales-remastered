@@ -276,18 +276,20 @@ Hooks.on("renderChatMessage", async (message, html, messageData) => {
                 }
                 else {
                     instance.dice.forEach(d => {
-                        instancehtml = instancehtml.replace(d.expression, `<span data-tooltip="%%%%">[${d.values.join("+")}]</span>`)
+                        instancehtml = instancehtml.replace(d.expression, `<span data-tooltip="%%%%"><span style="font-size:80%">[</span>${d.values.join(`<span style="font-size:80%">+</span>`)}<span style="font-size:80%">]</span></span>`)
                     })
                     instance.dice.forEach(d => {
                         instancehtml = instancehtml.replace("%%%%", d.expression)
                     })
+                    instancehtml = instancehtml.split("2 * ").join(`2<span style="font-size:80%">&times;</span>`);
+                    instancehtml = instancehtml.split(" + ").join(`<span style="font-size:80%">+</span>`);
                     $(elements[i]).html(instancehtml)
-                    $(elements[i]).prepend(`<span style="font-size:var(--font-size-20)">${instance.total}</span><span>=</span>`)
+                    $(elements[i]).prepend(`<span style="font-size:var(--font-size-20)">${instance.total}</span><span style="font-size:80%">=</span>`)
                 }
 
                 $(elements[i]).find('i').addClass("fa-lg fa-fw")
                 $(elements[i]).find('.splash i').removeClass("fa-lg fa-fw")
-                $(elements[i]).find('.precision i').removeClass("fa-lg fa-fw")
+                $(elements[i]).find('.precision i').removeClass("fa-lg fa-fw").css({"font-size": "80%"})
             })
 
             // Strip out the extra "+" text

@@ -17,9 +17,10 @@
  .chat-message .message-content .damage-roll .dice-result .dice-formula .instance {
     padding: 2px 0;
     display: flex;
-    gap: 0.15em;
+    gap: 0.1em;
     align-items: center;
     text-shadow: 1px 1px 0 #fff;
+    letter-spacing: -0.05em;
  }
 
  .chat-message .message-content .damage-roll .dice-result .dice-formula .instance i {
