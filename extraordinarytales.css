@@ -89,7 +89,7 @@
     display: none !important;
  }
 
- .chat-message ul.notes {
+ .chat-message ul.notes, .chat-message .card-content {
     overflow: auto;
     max-height: 200px;
     padding: 2px;

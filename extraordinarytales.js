@@ -12,7 +12,7 @@ Hooks.on("init", () => {
 
             if (!personalxp) {
                 ui.notifications.warn("Not enough XP!")
-                return;
+                return false;
             }
 
             const collateralxp = parseInt(actor.getFlag('pf2e-extraordinary-tales-remastered', 'collateralxp') ?? 0);
@@ -24,6 +24,9 @@ Hooks.on("init", () => {
             ChatMessage.create({
                 content: `<div style="font-size:120%"><i class="fa-solid fa-star"></i> Personal XP ${personalxp} <i class="fa-solid fa-arrow-right"></i> ${newpersonalxp}</div><div style="font-size:120%"><i class="fa-regular fa-star"></i> Collateral XP ${collateralxp} <i class="fa-solid fa-arrow-right"></i> ${newcollaterapxp}</div>`
             })
+
+            return true;
+
         },
         activateCollateralXP: async (actor) => {
             const collateralxp = parseInt(actor.getFlag('pf2e-extraordinary-tales-remastered', 'collateralxp') ?? 0);
@@ -31,7 +34,7 @@ Hooks.on("init", () => {
 
             if (!collateralxp) {
                 ui.notifications.warn("Not enough XP!")
-                return;
+                return false;
             }
 
             await actor.setFlag('pf2e-extraordinary-tales-remastered', 'collateralxp', newcollateralxp);
@@ -39,6 +42,8 @@ Hooks.on("init", () => {
             ChatMessage.create({
                 content: `<div style="font-size:120%"><i class="fa-solid fa-star"></i> Collateral XP ${collateralxp} <i class="fa-solid fa-arrow-right"></i> ${newcollateralxp}</div>`
             })
+
+            return true;
         },
         getUsagesFromXP: (xp) => {
             if (parseInt(xp) < 1) return 0;
@@ -72,19 +77,22 @@ Hooks.on("init", () => {
             });
             return result;
         },
-        promptPersonalXP: async () => {
-            const actor = game.user.character;
+        post: async (uuid) => {
+            const doc = await fromUuid(uuid)
+                
+            const json = doc.toJSON();
+            const actor =
+                canvas.tokens.controlled[0]?.actor ?? // Selected token's corresponding actor
+                game.user?.character ?? // Assigned actor
+                new Actor({ name: game.user.name, type: "character" }); // Dummy actor fallback
+
+            await new doc.constructor(json, { parent: actor }).toChat();
+        },
+        promptPersonalXP: async (actor) => {
+            actor = actor ?? game.user.character;
             const xp = parseInt(actor.getFlag('pf2e-extraordinary-tales-remastered', 'personalxp') ?? 0);
           
-            //     const doc = await fromUuid("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T")
-                
-            //     const json = doc.toJSON();
-            // const actor =
-            //   canvas.tokens.controlled[0]?.actor ?? // Selected token's corresponding actor
-            //   game.user?.character ?? // Assigned actor
-            //   new Actor({ name: game.user.name, type: "character" }); // Dummy actor fallback
-
-            // await new doc.constructor(json, { parent: actor }).toChat();
+           
 
             const content = `<div style="text-align:center;padding:0.5em;align-items:center" class="flexrow"><div>Personal XP: ${xp}<div style="font-size:125%">Uses Remaining: <strong>${game.extraordinarytales.getUsagesFromXP(xp)}</strong></div></div><div><div>Abilities</div>` + await TextEditor.enrichHTML(`@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T]{Heroic Harmony} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rdprmdU1JQ0IVAVn]{Rapid Response} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Xv0Bn4TdsNHgZFHf]{Ensure Endeavor}`) + `</div></div>`
             let d = new Dialog({
@@ -93,26 +101,43 @@ Hooks.on("init", () => {
                 buttons: {
                     one: {
                         icon: '<i class="fas fa-check"></i>',
-                        label: `Use Personal Ability`,
+                        label: `Heroic Harmony`,
                         callback: async () => {
-                            await game.extraordinarytales.activatePersonalXP(actor)
+                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            if (result) await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T")
                         }
                     },
                     two: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: `Rapid Response`,
+                        callback: async () => {
+                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            if (result) await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rdprmdU1JQ0IVAVn")
+                        }
+                    },
+                    three: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: `Ensure Endeavor`,
+                        callback: async () => {
+                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            if (result) await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Xv0Bn4TdsNHgZFHf")
+                        }
+                    },
+                    four: {
                         icon: '<i class="fas fa-times"></i>',
                         label: "Cancel",
                         callback: () => {}
                     }
                 },
-                default: "two",
+                default: "four",
                 render: html => {},
                 close: html => {}
             })
             d.position.width = 500;
             d.render(true);
         },
-        promptCollateralXP: async () => {
-            const actor = game.user.character;
+        promptCollateralXP: async (actor) => {
+            actor = actor ?? game.user.character;
             const xp = parseInt(actor.getFlag('pf2e-extraordinary-tales-remastered', 'collateralxp') ?? 0);
 
             const content = `<div style="text-align:center;padding:0.5em;align-items:center" class="flexrow"><div>Collateral XP: ${xp}<div style="font-size:125%">Uses Remaining: <strong>${game.extraordinarytales.getUsagesFromXP(xp)}</strong></div></div><div><div>Abilities</div>` + await TextEditor.enrichHTML(`@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rnsVkUEavmw6dl0B]{Daring Determination} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Sye4A4BHZWpkn1Pz]{Shared Struggle} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.hZxUrDV2W7a4PZw2]{Tandem Tactics}`) + `</div></div>`
@@ -123,25 +148,85 @@ Hooks.on("init", () => {
                 buttons: {
                     one: {
                         icon: '<i class="fas fa-check"></i>',
-                        label: `Use Collateral Ability`,
+                        label: `Use Collateral`,
                         callback: async () => {
                             await game.extraordinarytales.activateCollateralXP(actor)
                         }
                     },
                     two: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: `Daring Determination`,
+                        callback: async () => {
+                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            if (result) await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rnsVkUEavmw6dl0B")
+                        }
+                    },
+                    three: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: `Shared Struggle`,
+                        callback: async () => {
+                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            if (result)  await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Sye4A4BHZWpkn1Pz")
+                        }
+                    },
+                    four: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: `Tandem Tactics`,
+                        callback: async () => {
+                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            if (result) await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.hZxUrDV2W7a4PZw2")
+                        }
+                    },
+                    five: {
                         icon: '<i class="fas fa-times"></i>',
                         label: "Cancel",
                         callback: () => {}
                     }
                 },
-                default: "two",
+                default: "five",
                 render: html => {},
                 close: html => {}
             })
             d.position.width = 500;
             d.render(true);
-           
+        },
+        setTerm: (roll, number, flavor = "adjust") => {
+            let term = roll.terms.find(t => t.flavor == flavor) ?? false;
 
+            if (!term) {
+                term = new foundry.dice.terms.NumericTerm({number: 0, options:{flavor: flavor}});
+                roll.terms.push(new foundry.dice.terms.OperatorTerm({operator:"+"}))
+                roll.terms.push(term);
+            }
+
+            term.number = number;
+            
+            if (term.number == 0) {
+                const idx = roll.terms.findIndex(t => t == term);
+                roll.terms.splice(idx - 1, 2);
+            }
+
+            roll._total = roll._evaluateTotal();
+            roll._formula = roll.formula;
+        },
+        addTerm: (roll, add, flavor = "adjust") => {
+            let term = roll.terms.find(t => t.flavor == flavor) ?? false;
+
+            if (!term) {
+                term = new foundry.dice.terms.NumericTerm({number: 0, options:{flavor: flavor}});
+                roll.terms.push(new foundry.dice.terms.OperatorTerm({operator:"+"}))
+                roll.terms.push(term);
+            }
+
+            term.number += add;
+
+            if (term.number == 0) {
+                const idx = roll.terms.findIndex(t => t == term);
+                roll.terms.splice(idx - 1, 2);
+            }
+
+            roll._total = roll._evaluateTotal();
+            roll._formula = roll.formula;
         },
         openRules: async () => {
             const docs = await game.packs.get("pf2e-extraordinary-tales-remastered.extraordinary-tales-rules").getDocuments();
@@ -204,6 +289,9 @@ Hooks.on("init", () => {
             }
         }
     };
+
+    // game.pf2e.ModifierType["HEROIC"] = "heroic";
+    // game.pf2e.ModifierType["ESCALATION"] = "escalation";
 });
 
 // Rename the roll options to be clearer in adherence to Pathfinder 2e
@@ -212,6 +300,11 @@ Hooks.on('renderCheckModifiersDialog', (app, html, data) => {
     html.find(".roll-mode-panel option[value=gmroll]").text("Roll to Self and GM");
     html.find(".roll-mode-panel option[value=selfroll]").text("Test Roll to Self");
     html.find(".roll-mode-panel option[value=blindroll]").text("Secret Roll to GM");
+
+    // html.find(".add-modifier-type").append(`<option value="heroic">Heroic</option>`)
+    // html.find(".add-modifier-type").append(`<option value="escalation">Escalation</option>`)
+    
+    // console.log(app, data);
 })
 
 Hooks.on('renderChatLogPF2e', (app, html, data) => {
@@ -560,6 +653,65 @@ Hooks.on("getChatLogEntryContext", (application, options) => {
         }
     })
 
+    options.push({
+        name: "Heroic Harmony",
+        condition: $li => {
+            const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+            return (message.isOwner || game.user.isGM) && message.isReroll && (message.flavor ?? "").includes("fa-hospital-symbol");
+        },
+        icon: `<i class="fas fa-star"></i>`,
+        callback: async $li => {
+            const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+            let d = new Dialog({
+                title: "Use Heroic Harmony",
+                content: `Activate Heroic Harmony for this reroll?`,
+                buttons: {
+                    one: {
+                        icon: '<i class="fas fa-check"></i>',
+                        label: `Confirm`,
+                        callback: async () => {
+                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            if (result) {
+                                await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T")
+                                game.extraordinarytales.setTerm(message.rolls[0], 2, "heroic")
+                            }
+                        }
+                    },
+                    two: {
+                        icon: '<i class="fas fa-times"></i>',
+                        label: "Cancel",
+                        callback: () => {}
+                    }
+                },
+                default: "two",
+                render: html => {},
+                close: html => {}
+            })
+            d.position.width = 500;
+            d.render(true);
+        }
+    })
+
+    // options.push({
+    //     name: "Ensure Endeavor",
+    //     condition: $li => {
+    //         const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+    //         if (!message.isReroll) return false;
+
+    //         const html = $(`<div>` + message.content + `</div>`)
+
+    //         const reroll = parseInt(html.find(".reroll-discard .dice-total").text() || 0);
+    //         const roll = parseInt(html.find(".dice-total").not(".reroll-discard .dice-total").text() || 0);
+    //         console.log(reroll, roll);
+    //         return (!message.isOwner || game.user.isGM) && message.isReroll && (message.flavor ?? "").includes("fa-hospital-symbol") && reroll <= roll;
+    //     },
+    //     icon: `<i class="fas fa-star"></i>`,
+    //     callback: async $li => {
+    //         const message = game.messages.get($li[0].dataset.messageId, { strict: true });
+    //         game.extraordinarytales.promptPersonalXP(game.user.character)
+    //     }
+    // })
+
 });
 
 Hooks.on('getSceneControlButtons', (controls) => {
@@ -571,6 +723,7 @@ Hooks.on('getSceneControlButtons', (controls) => {
                 name: "extraordinarytales",
                 title: "Extraordinary Tales",
                 toggle: false,
+                button: true,
                 visible: true,
                 onClick: () => {
                     game.extraordinarytales.openEditor();
