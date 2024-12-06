@@ -94,13 +94,13 @@ Hooks.on("init", () => {
           
            
 
-            const content = `<div style="text-align:center;padding:0.5em;align-items:center" class="flexrow"><div>Personal XP: ${xp}<div style="font-size:125%">Uses Remaining: <strong>${game.extraordinarytales.getUsagesFromXP(xp)}</strong></div></div><div><div>Abilities</div>` + await TextEditor.enrichHTML(`@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T]{Heroic Harmony} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rdprmdU1JQ0IVAVn]{Rapid Response} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Xv0Bn4TdsNHgZFHf]{Ensure Endeavor}`) + `</div></div>`
+            const content = `<div style="text-align:center;padding:0.5em;align-items:center" class="flexrow"><div>Personal XP: ${xp}<div style="font-size:125%">Uses Remaining: <strong>${game.extraordinarytales.getUsagesFromXP(xp)}</strong></div></div><div>` + await TextEditor.enrichHTML(`@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T]{Heroic Harmony} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rdprmdU1JQ0IVAVn]{Rapid Response} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Xv0Bn4TdsNHgZFHf]{Ensure Endeavor}`) + `</div></div>`
             let d = new Dialog({
                 title: "Use Personal XP Ability",
                 content: content,
                 buttons: {
                     one: {
-                        icon: '<i class="fas fa-check"></i>',
+                        icon: '',
                         label: `Heroic Harmony`,
                         callback: async () => {
                             const result = await game.extraordinarytales.activatePersonalXP(actor)
@@ -108,7 +108,7 @@ Hooks.on("init", () => {
                         }
                     },
                     two: {
-                        icon: '<i class="fas fa-check"></i>',
+                        icon: '',
                         label: `Rapid Response`,
                         callback: async () => {
                             const result = await game.extraordinarytales.activatePersonalXP(actor)
@@ -116,7 +116,7 @@ Hooks.on("init", () => {
                         }
                     },
                     three: {
-                        icon: '<i class="fas fa-check"></i>',
+                        icon: '',
                         label: `Ensure Endeavor`,
                         callback: async () => {
                             const result = await game.extraordinarytales.activatePersonalXP(actor)
@@ -140,21 +140,21 @@ Hooks.on("init", () => {
             actor = actor ?? game.user.character;
             const xp = parseInt(actor.getFlag('pf2e-extraordinary-tales-remastered', 'collateralxp') ?? 0);
 
-            const content = `<div style="text-align:center;padding:0.5em;align-items:center" class="flexrow"><div>Collateral XP: ${xp}<div style="font-size:125%">Uses Remaining: <strong>${game.extraordinarytales.getUsagesFromXP(xp)}</strong></div></div><div><div>Abilities</div>` + await TextEditor.enrichHTML(`@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rnsVkUEavmw6dl0B]{Daring Determination} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Sye4A4BHZWpkn1Pz]{Shared Struggle} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.hZxUrDV2W7a4PZw2]{Tandem Tactics}`) + `</div></div>`
+            const content = `<div style="text-align:center;padding:0.5em;align-items:center" class="flexrow"><div>Collateral XP: ${xp}<div style="font-size:125%">Uses Remaining: <strong>${game.extraordinarytales.getUsagesFromXP(xp)}</strong></div></div><div>` + await TextEditor.enrichHTML(`@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rnsVkUEavmw6dl0B]{Daring Determination} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Sye4A4BHZWpkn1Pz]{Shared Struggle} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.hZxUrDV2W7a4PZw2]{Tandem Tactics}`) + `</div></div>`
 
             let d = new Dialog({
                 title: "Use Collateral XP Ability",
                 content: content,
                 buttons: {
                     one: {
-                        icon: '<i class="fas fa-check"></i>',
+                        icon: '',
                         label: `Use Collateral`,
                         callback: async () => {
                             await game.extraordinarytales.activateCollateralXP(actor)
                         }
                     },
                     two: {
-                        icon: '<i class="fas fa-check"></i>',
+                        icon: '',
                         label: `Daring Determination`,
                         callback: async () => {
                             const result = await game.extraordinarytales.activatePersonalXP(actor)
@@ -162,7 +162,7 @@ Hooks.on("init", () => {
                         }
                     },
                     three: {
-                        icon: '<i class="fas fa-check"></i>',
+                        icon: '',
                         label: `Shared Struggle`,
                         callback: async () => {
                             const result = await game.extraordinarytales.activatePersonalXP(actor)
@@ -499,6 +499,8 @@ class ExtraTalesEditorApplication extends Application {
 
     activateListeners(html) {
 
+        TextEditor.enrichHTML(`<div>@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T]{Heroic Harmony} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rdprmdU1JQ0IVAVn]{Rapid Response} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Xv0Bn4TdsNHgZFHf]{Ensure Endeavor}</div><div>@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rnsVkUEavmw6dl0B]{Daring Determination} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Sye4A4BHZWpkn1Pz]{Shared Struggle} @UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.hZxUrDV2W7a4PZw2]{Tandem Tactics}</div><div>@UUID[Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.fE9WYfF3IDqGCtWz]{Bestowed Bravery}</div>`).then(result => html.find(`[data-target="abilities"]`).html(result)) 
+
         game.actors.find(a => a.type == "party").members.forEach(m => {
             m.apps[this.id] = this;
         })
@@ -507,13 +509,19 @@ class ExtraTalesEditorApplication extends Application {
             const action = ev.currentTarget.dataset.action;
 
             if (action == "personal") {
-                if (game.user.isGM) return;
-                game.extraordinarytales.activatePersonalXP(game.user.character);
+                if (game.user.isGM && _token.actor.type == "character") {
+                    game.extraordinarytales.promptPersonalXP(_token.actor)
+                    return;
+                }
+                game.extraordinarytales.promptPersonalXP(game.user.character);
                 return;
             }
             if (action == "collateral") {
-                if (game.user.isGM) return;
-                game.extraordinarytales.activateCollateralXP(game.user.character);
+                if (game.user.isGM && _token.actor.type == "character") {
+                    game.extraordinarytales.promptCollateralXP(_token.actor)
+                    return;
+                }
+                game.extraordinarytales.promptCollateralXP(game.user.character);
                 return;
             }
             if (action == "rules") {
@@ -670,10 +678,21 @@ Hooks.on("getChatLogEntryContext", (application, options) => {
                         icon: '<i class="fas fa-check"></i>',
                         label: `Confirm`,
                         callback: async () => {
-                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            const result = await game.extraordinarytales.activatePersonalXP(message.actor)
                             if (result) {
                                 await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.ZL92qElc3fNO6U7T")
                                 game.extraordinarytales.setTerm(message.rolls[0], 2, "heroic")
+
+                                
+                                // Force update for rerolls that are a pain in the butt
+                                const content = $(`<div>` + message.content + `</div>`);
+                                content.find(".dice-result .dice-formula").not('.reroll-discard .dice-formula').text(message.rolls[0].formula)
+                                content.find(".dice-result .dice-total").not('.reroll-discard .dice-total').text(message.rolls[0]._total)
+                                
+                                await message.update({
+                                    rolls: foundry.utils.duplicate(message.rolls),
+                                    content: content.html()
+                                })
                             }
                         }
                     },
@@ -739,6 +758,7 @@ Hooks.on("ready", async () => {
     Handlebars.registerHelper('xpUses', function (xp) {
         return game.extraordinarytales.getUsagesFromXP(parseInt(xp) || 0)
     })
+
 
 
     if (!game.user.isGM) return;
