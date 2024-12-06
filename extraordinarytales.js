@@ -148,16 +148,16 @@ Hooks.on("init", () => {
                 buttons: {
                     one: {
                         icon: '',
-                        label: `Use Collateral`,
+                        label: `Contribute`,
                         callback: async () => {
-                            await game.extraordinarytales.activateCollateralXP(actor)
+                            const result = await game.extraordinarytales.activateCollateralXP(actor)
                         }
                     },
                     two: {
                         icon: '',
                         label: `Daring Determination`,
                         callback: async () => {
-                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            const result = await game.extraordinarytales.activateCollateralXP(actor)
                             if (result) await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.rnsVkUEavmw6dl0B")
                         }
                     },
@@ -165,15 +165,15 @@ Hooks.on("init", () => {
                         icon: '',
                         label: `Shared Struggle`,
                         callback: async () => {
-                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            const result = await game.extraordinarytales.activateCollateralXP(actor)
                             if (result)  await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.Sye4A4BHZWpkn1Pz")
                         }
                     },
                     four: {
-                        icon: '<i class="fas fa-check"></i>',
+                        icon: '',
                         label: `Tandem Tactics`,
                         callback: async () => {
-                            const result = await game.extraordinarytales.activatePersonalXP(actor)
+                            const result = await game.extraordinarytales.activateCollateralXP(actor)
                             if (result) await game.extraordinarytales.post("Compendium.pf2e-extraordinary-tales-remastered.extraordinary-tales-actions.Item.hZxUrDV2W7a4PZw2")
                         }
                     },
